@@ -15,27 +15,39 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.Query;
 
+/**
+ * Main activity displaying a list of notes and providing options such as adding a new note and logging out.
+ */
 public class MainActivity extends AppCompatActivity {
-
+    // UI elements
     FloatingActionButton addNoteBtn;
     RecyclerView recyclerView;
     ImageButton menuBtn;
     NoteAdapter noteAdapter;
 
+    /**
+     * Initializes UI elements, sets up click listeners, and configures the RecyclerView.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Initialize UI elements
         addNoteBtn = findViewById(R.id.add_note_btn);
         recyclerView = findViewById(R.id.recyler_view);
         menuBtn = findViewById(R.id.menu_btn);
 
+        // Set click listeners
         addNoteBtn.setOnClickListener((v)-> startActivity(new Intent(MainActivity.this,NoteDetailsActivity.class)) );
         menuBtn.setOnClickListener((v)->showMenu() );
+        // Setup RecyclerView
         setupRecyclerView();
     }
 
+    /**
+     * Displays a popup menu with options like logout when the menu button is clicked.
+     */
     void showMenu(){
         PopupMenu popupMenu  = new PopupMenu(MainActivity.this,menuBtn);
         popupMenu.getMenu().add("Logout");
@@ -55,6 +67,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Configures the RecyclerView to display notes in descending order of timestamp.
+     */
     void setupRecyclerView(){
         Query query  = Utility.getCollectionReferenceForNotes().orderBy("timestamp",Query.Direction.DESCENDING);
         FirestoreRecyclerOptions<Note> options = new FirestoreRecyclerOptions.Builder<Note>()
@@ -64,18 +79,27 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(noteAdapter);
     }
 
+    /**
+     * Starts listening for changes when the activity is resumed.
+     */
     @Override
     protected void onStart() {
         super.onStart();
         noteAdapter.startListening();
     }
 
+    /**
+     * Stops listening for changes when the activity is stopped.
+     */
     @Override
     protected void onStop() {
         super.onStop();
         noteAdapter.stopListening();
     }
 
+    /**
+     * Notifies the adapter of data changes when the activity is resumed.
+     */
     @Override
     protected void onResume() {
         super.onResume();
